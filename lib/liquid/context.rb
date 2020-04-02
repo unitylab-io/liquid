@@ -85,7 +85,7 @@ module Liquid
     end
 
     def handle_error(e, line_number = nil)
-      e = internal_error unless e.is_a?(Liquid::Error)
+      e = internal_error(e) unless e.is_a?(Liquid::Error)
       e.template_name ||= template_name
       e.line_number   ||= line_number
       errors.push(e)
@@ -240,9 +240,9 @@ module Liquid
       base_scope_depth + @scopes.length > Block::MAX_DEPTH
     end
 
-    def internal_error
+    def internal_error(e = nil)
       # raise and catch to set backtrace and cause on exception
-      raise Liquid::InternalError, 'internal'
+      raise Liquid::InternalError, "internal: #{e&.message} (#{e&.class})"
     rescue Liquid::InternalError => exc
       exc
     end
